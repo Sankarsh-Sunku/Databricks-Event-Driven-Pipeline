@@ -1,0 +1,26 @@
+resources:
+  jobs:
+    orders_tracking:
+      name: orders_tracking
+      trigger:
+        pause_status: UNPAUSED
+        file_arrival:
+          url: /Volumes/incremental_load/default/order_data/source/
+      tasks:
+        - task_key: Load_Stage_Table
+          notebook_task:
+            notebook_path: /Workspace/Users/sunkusankarsh@gmail.com/Databricks-Event-Driven-Pipeline/orders_stage_load
+            source: WORKSPACE
+          existing_cluster_id: 0101-053106-1qosrdzl
+          libraries:
+            - pypi:
+                package: pandas
+        - task_key: Target_Load
+          depends_on:
+            - task_key: Load_Stage_Table
+          notebook_task:
+            notebook_path: /Workspace/Users/sunkusankarsh@gmail.com/Databricks-Event-Driven-Pipeline/orders_target_load
+            source: WORKSPACE
+          existing_cluster_id: 0101-053106-1qosrdzl
+      queue:
+        enabled: true
